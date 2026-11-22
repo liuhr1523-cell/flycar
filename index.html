@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="亿航 EH216-S 载人 eVTOL 全方位调研与技术、场景、市场可行性分析 - 飞行汽车技术基础课程作业">
+<title>亿航 EH216-S · 载人 eVTOL 全方位调研与技术·场景·市场可行性分析</title>
+<style>
+:root{
+  --bg:#070d1b; --bg2:#0b1428; --panel:#101c36; --panel2:#142343;
+  --line:rgba(255,255,255,.09); --line2:rgba(120,170,255,.22);
+  --txt:#e8eefc; --txt2:#9fb0d0; --txt3:#6f83a8;
+  --blue:#3b82f6; --cyan:#22d3ee; --violet:#8b5cf6; --amber:#fbbf24;
+  --green:#34d399; --red:#fb7185;
+  --grad:linear-gradient(120deg,#3b82f6 0%,#22d3ee 55%,#8b5cf6 100%);
+  --shadow:0 24px 60px rgba(0,0,0,.35);
+  --max:1180px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:"Segoe UI","PingFang SC","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+  background:var(--bg); color:var(--txt); line-height:1.75;
+  -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+::selection{background:rgba(59,130,246,.4);color:#fff}
+a{color:var(--cyan);text-decoration:none;transition:.2s}
+a:hover{color:#fff}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
+.mono{font-family:"SF Mono",Consolas,"Roboto Mono",monospace}
+.grad-txt{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* ===== Progress bar ===== */
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:var(--grad);z-index:1000;box-shadow:0 0 12px rgba(34,211,238,.6)}
+
+/* ===== Nav ===== */
+nav{position:fixed;top:0;left:0;right:0;z-index:900;backdrop-filter:blur(18px);
+  background:rgba(7,13,27,.72);border-bottom:1px solid var(--line);transition:.3s}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.5px;font-size:15px}
+.brand .logo{width:34px;height:34px;border-radius:10px;background:var(--grad);display:grid;place-items:center;
+  box-shadow:0 6px 18px rgba(59,130,246,.4)}
+.brand .logo svg{width:20px;height:20px}
+.nav-links{display:flex;gap:6px;list-style:none;flex-wrap:wrap}
+.nav-links a{color:var(--txt2);font-size:13px;padding:7px 11px;border-radius:8px;font-weight:500}
+.nav-links a:hover{background:rgba(255,255,255,.07);color:#fff}
+.nav-toggle{display:none;background:none;border:1px solid var(--line);color:var(--txt);
+  padding:8px 12px;border-radius:8px;cursor:pointer;font-size:18px}
+
+/* ===== Hero ===== */
+.hero{position:relative;min-height:100vh;display:flex;align-items:center;padding-top:80px;overflow:hidden}
+.hero-bg{position:absolute;inset:0;z-index:0}
+.hero-bg::before{content:"";position:absolute;inset:0;
+  background:radial-gradient(900px 500px at 78% 18%,rgba(59,130,246,.22),transparent 60%),
+             radial-gradient(700px 500px at 12% 82%,rgba(139,92,246,.18),transparent 60%),
+             linear-gradient(180deg,#070d1b,#0a1330 70%,#070d1b)}
+.grid-overlay{position:absolute;inset:0;opacity:.28;
+  background-image:linear-gradient(rgba(120,170,255,.08) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(120,170,255,.08) 1px,transparent 1px);
+  background-size:52px 52px;
+  mask-image:radial-gradient(ellipse at 50% 40%,#000 30%,transparent 78%)}
+.hero-inner{position:relative;z-index:2;width:100%}
+.hero .tag{display:inline-flex;align-items:center;gap:8px;padding:7px 15px;border-radius:100px;
+  background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.3);color:var(--cyan);
+  font-size:12.5px;font-weight:700;letter-spacing:.6px;margin-bottom:26px}
+.pulse{width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 0 0 rgba(34,211,238,.7);
+  animation:pulse 2s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 10px rgba(34,211,238,0)}100%{box-shadow:0 0 0 0 rgba(34,211,238,0)}}
+.hero h1{font-size:clamp(38px,6.2vw,76px);line-height:1.08;font-weight:900;letter-spacing:-1.5px;margin-bottom:8px}
+.hero h1 .sub{display:block;font-size:clamp(20px,2.8vw,34px);font-weight:500;color:var(--txt2);margin-top:12px;letter-spacing:0}
+.hero .lead{max-width:760px;color:var(--txt2);font-size:clamp(15px,1.6vw,18px);margin:26px 0 34px}
+.hero .lead strong{color:var(--txt);font-weight:600}
+.hero-meta{display:flex;flex-wrap:wrap;gap:10px 26px;color:var(--txt3);font-size:13px;margin-bottom:44px}
+.hero-meta span{display:flex;align-items:center;gap:7px}
+.hero-meta svg{width:15px;height:15px;opacity:.7}
+.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.stat{background:linear-gradient(160deg,rgba(20,35,67,.85),rgba(11,20,40,.6));
+  border:1px solid var(--line2);border-radius:16px;padding:22px 20px;position:relative;overflow:hidden}
+.stat::after{content:"";position:absolute;top:0;left:0;width:100%;height:2px;background:var(--grad);opacity:.7}
+.stat .num{font-size:clamp(26px,3.4vw,40px);font-weight:900;line-height:1;letter-spacing:-1px}
+.stat .unit{font-size:15px;font-weight:600;color:var(--txt2);margin-left:3px}
+.stat .label{color:var(--txt3);font-size:12.5px;margin-top:10px;letter-spacing:.3px}
+.scroll-hint{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);z-index:3;
+  color:var(--txt3);font-size:11px;letter-spacing:2px;text-align:center;animation:bob 2.4s infinite}
+.scroll-hint .mouse{width:22px;height:34px;border:1.5px solid var(--txt3);border-radius:12px;margin:0 auto 8px;position:relative}
+.scroll-hint .mouse::after{content:"";position:absolute;top:6px;left:50%;width:3px;height:7px;border-radius:2px;
+  background:var(--cyan);transform:translateX(-50%);animation:wheel 2.4s infinite}
+@keyframes wheel{0%{opacity:0;transform:translate(-50%,0)}40%{opacity:1}100%{opacity:0;transform:translate(-50%,12px)}}
+@keyframes bob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(6px)}}
+
+/* ===== Sections ===== */
+section{padding:96px 0;position:relative}
+section.alt{background:linear-gradient(180deg,transparent,rgba(16,28,54,.5),transparent)}
+.sec-head{margin-bottom:48px;max-width:820px}
+.eyebrow{display:inline-flex;align-items:center;gap:12px;font-size:12.5px;font-weight:800;letter-spacing:2px;
+  color:var(--cyan);text-transform:uppercase;margin-bottom:14px}
+.eyebrow::before{content:"";width:28px;height:2px;background:var(--cyan)}
+.sec-head h2{font-size:clamp(28px,3.6vw,44px);font-weight:850;letter-spacing:-.8px;line-height:1.2;margin-bottom:14px}
+.sec-head p{color:var(--txt2);font-size:15.5px}
+
+/* reveal */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
+.reveal.in{opacity:1;transform:none}
+
+/* cards */
+.card{background:linear-gradient(160deg,rgba(20,35,67,.7),rgba(11,20,40,.5));
+  border:1px solid var(--line);border-radius:18px;padding:28px;transition:.3s}
+.card:hover{border-color:var(--line2);transform:translateY(-3px);box-shadow:var(--shadow)}
+.card h3{font-size:19px;font-weight:750;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.card p{color:var(--txt2);font-size:14.5px}
+.card p+p{margin-top:12px}
+.icon-box{width:40px;height:40px;border-radius:11px;background:rgba(59,130,246,.14);border:1px solid var(--line2);
+  display:grid;place-items:center;flex:none;color:var(--cyan)}
+.icon-box svg{width:20px;height:20px}
+
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+
+/* statement / summary */
+.summary-box{border-left:3px solid var(--cyan);background:rgba(34,211,238,.05);
+  border-radius:0 14px 14px 0;padding:24px 28px;margin-bottom:34px}
+.summary-box p{color:var(--txt);font-size:16px}
+.summary-box strong{color:var(--cyan)}
+.sum-list{list-style:none;display:grid;gap:14px}
+.sum-list li{display:flex;gap:16px;padding:18px 20px;background:rgba(255,255,255,.025);
+  border:1px solid var(--line);border-radius:14px;transition:.25s}
+.sum-list li:hover{background:rgba(59,130,246,.06);border-color:var(--line2)}
+.sum-n{flex:none;width:30px;height:30px;border-radius:9px;background:var(--grad);display:grid;place-items:center;
+  font-weight:800;font-size:13px;color:#06122b}
+.sum-list b{color:var(--txt)}
+.sum-list span{color:var(--txt2);font-size:14px}
+
+/* product spec table */
+.spec-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+.spec{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:14px;padding:20px;position:relative}
+.spec .k{color:var(--txt3);font-size:12.5px;margin-bottom:6px;letter-spacing:.4px}
+.spec .v{font-size:23px;font-weight:800;letter-spacing:-.5px}
+.spec .v small{font-size:13px;color:var(--txt2);font-weight:600}
+.spec .bar{position:absolute;bottom:0;left:0;height:3px;border-radius:0 0 14px 14px;background:var(--grad)}
+.note{font-size:12px;color:var(--txt3);margin-top:16px;line-height:1.7}
+
+/* timeline */
+.timeline{position:relative;padding-left:34px}
+.timeline::before{content:"";position:absolute;left:9px;top:6px;bottom:6px;width:2px;
+  background:linear-gradient(180deg,var(--blue),var(--cyan),var(--violet),transparent)}
+.tl-item{position:relative;padding:0 0 30px 4px}
+.tl-item:last-child{padding-bottom:0}
+.tl-item::before{content:"";position:absolute;left:-30px;top:5px;width:14px;height:14px;border-radius:50%;
+  background:var(--bg);border:3px solid var(--cyan);box-shadow:0 0 0 4px rgba(34,211,238,.12)}
+.tl-item.key::before{background:var(--amber);border-color:var(--amber);box-shadow:0 0 0 5px rgba(251,191,36,.18)}
+.tl-date{font-family:"SF Mono",Consolas,monospace;color:var(--cyan);font-size:13px;font-weight:700;margin-bottom:3px}
+.tl-item.key .tl-date{color:var(--amber)}
+.tl-title{font-weight:700;font-size:16px;margin-bottom:3px}
+.tl-desc{color:var(--txt2);font-size:13.5px}
+
+/* certification badges */
+.cert-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:34px}
+.cert{text-align:center;padding:22px 12px;border-radius:16px;border:1px solid var(--line2);
+  background:linear-gradient(160deg,rgba(52,211,153,.1),rgba(11,20,40,.5))}
+.cert .ic{font-size:26px;margin-bottom:8px}
+.cert .code{font-size:22px;font-weight:900;color:var(--green)}
+.cert .nm{font-size:12px;color:var(--txt2);margin-top:4px}
+.cert .dt{font-size:11px;color:var(--txt3);margin-top:8px;font-family:monospace}
+
+/* tech flow */
+.flow{display:flex;flex-wrap:wrap;align-items:stretch;gap:10px}
+.flow-col{flex:1;min-width:150px}
+.flow-title{font-size:13px;font-weight:700;color:var(--txt2);margin-bottom:12px;text-align:center;letter-spacing:.5px}
+.flow-node{background:rgba(59,130,246,.08);border:1px solid var(--line2);border-radius:12px;
+  padding:14px 12px;margin-bottom:10px;text-align:center;font-size:13px;position:relative}
+.flow-node b{display:block;color:var(--txt);font-size:14px;margin-bottom:2px}
+.flow-node span{color:var(--txt3);font-size:11.5px}
+.flow-arrow{text-align:center;color:var(--cyan);font-size:20px;margin:-4px 0 8px}
+
+/* charts */
+.chart-card{background:linear-gradient(160deg,rgba(20,35,67,.7),rgba(11,20,40,.5));
+  border:1px solid var(--line);border-radius:18px;padding:26px}
+.chart-title{font-size:16px;font-weight:750;margin-bottom:4px}
+.chart-sub{color:var(--txt3);font-size:12.5px;margin-bottom:22px}
+.chart-wrap{width:100%;overflow-x:auto}
+svg.chart{width:100%;height:auto;display:block;min-width:280px}
+.legend{display:flex;flex-wrap:wrap;gap:16px;margin-top:16px;font-size:12px;color:var(--txt2)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px}
+
+/* scenario cards */
+.scen .icon-box{background:rgba(139,92,246,.14);color:var(--violet)}
+.scen:nth-child(2) .icon-box{background:rgba(251,191,36,.12);color:var(--amber)}
+.scen:nth-child(3) .icon-box{background:rgba(52,211,153,.12);color:var(--green)}
+.tag-row{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}
+.tag{font-size:11px;padding:4px 10px;border-radius:100px;border:1px solid var(--line2);
+  color:var(--txt2);background:rgba(255,255,255,.03)}
+
+/* feasibility verdict */
+.verdict{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:8px}
+.v-item{border:1px solid var(--line);border-radius:16px;padding:24px;background:rgba(255,255,255,.025)}
+.v-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.v-name{font-weight:750;font-size:16px}
+.v-score{font-size:13px;font-weight:800;padding:5px 12px;border-radius:100px}
+.v-green{background:rgba(52,211,153,.15);color:var(--green)}
+.v-amber{background:rgba(251,191,36,.15);color:var(--amber)}
+.v-red{background:rgba(251,113,133,.15);color:var(--red)}
+.meter{height:7px;border-radius:5px;background:rgba(255,255,255,.08);overflow:hidden;margin-bottom:12px}
+.meter i{display:block;height:100%;border-radius:5px;width:0;transition:width 1.4s cubic-bezier(.2,.8,.2,1)}
+.v-item p{font-size:13.5px;color:var(--txt2)}
+
+/* table */
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:16px}
+table{width:100%;border-collapse:collapse;min-width:720px;font-size:13.5px}
+thead th{background:rgba(59,130,246,.12);color:var(--txt);text-align:left;padding:15px 16px;
+  font-weight:750;font-size:13px;white-space:nowrap;border-bottom:1px solid var(--line2)}
+tbody td{padding:14px 16px;border-bottom:1px solid var(--line);color:var(--txt2);vertical-align:top}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:rgba(255,255,255,.03)}
+tbody td:first-child{color:var(--txt);font-weight:650}
+.hl-col{background:rgba(34,211,238,.05)}
+.pill{display:inline-block;font-size:11px;padding:3px 9px;border-radius:100px;font-weight:700}
+.p-g{background:rgba(52,211,153,.14);color:var(--green)}
+.p-a{background:rgba(251,191,36,.14);color:var(--amber)}
+.p-b{background:rgba(156,163,175,.14);color:#cbd5e1}
+
+/* SWOT */
+.swot{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.sw{border-radius:16px;padding:24px;border:1px solid var(--line)}
+.sw h4{font-size:15px;margin-bottom:14px;display:flex;align-items:center;gap:9px;font-weight:800}
+.sw .badge{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;font-size:13px;font-weight:900;color:#06122b}
+.sw ul{list-style:none;display:grid;gap:9px}
+.sw li{font-size:13.5px;color:var(--txt2);padding-left:16px;position:relative}
+.sw li::before{content:"";position:absolute;left:0;top:9px;width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.6}
+.sw-s{background:rgba(52,211,153,.05)}.sw-s .badge{background:var(--green)}
+.sw-w{background:rgba(251,191,36,.05)}.sw-w .badge{background:var(--amber)}
+.sw-o{background:rgba(59,130,246,.06)}.sw-o .badge{background:var(--blue)}
+.sw-t{background:rgba(251,113,133,.05)}.sw-t .badge{background:var(--red)}
+
+/* risk */
+.risk-row{display:flex;gap:16px;align-items:flex-start;padding:18px 0;border-bottom:1px solid var(--line)}
+.risk-row:last-child{border-bottom:none}
+.risk-lv{flex:none;font-size:11px;font-weight:800;padding:5px 11px;border-radius:100px;margin-top:2px}
+.r-h{background:rgba(251,113,133,.15);color:var(--red)}
+.r-m{background:rgba(251,191,36,.15);color:var(--amber)}
+.r-l{background:rgba(52,211,153,.15);color:var(--green)}
+.risk-body b{color:var(--txt);font-size:15px}
+.risk-body p{color:var(--txt2);font-size:13.5px;margin-top:3px}
+
+/* references */
+.ref-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.ref{display:flex;gap:12px;padding:14px 16px;border:1px solid var(--line);border-radius:12px;
+  background:rgba(255,255,255,.02);transition:.25s}
+.ref:hover{border-color:var(--line2);background:rgba(59,130,246,.05)}
+.ref .rn{flex:none;font-family:monospace;color:var(--cyan);font-size:12px;font-weight:700}
+.ref .rt{font-size:13px;color:var(--txt2);line-height:1.5}
+.ref .rt b{display:block;color:var(--txt);font-weight:650;margin-bottom:2px}
+
+/* conclusion */
+.conclusion{background:linear-gradient(135deg,rgba(59,130,246,.16),rgba(139,92,246,.12));
+  border:1px solid var(--line2);border-radius:22px;padding:clamp(28px,5vw,52px);text-align:center}
+.conclusion h3{font-size:clamp(22px,3vw,32px);font-weight:850;margin-bottom:18px}
+.conclusion p{color:var(--txt2);font-size:16px;max-width:820px;margin:0 auto 14px}
+.conclusion .big{font-size:clamp(18px,2.4vw,24px);color:var(--txt);font-weight:650}
+
+/* footer */
+footer{border-top:1px solid var(--line);padding:44px 0 34px;background:rgba(7,13,27,.7)}
+.foot-grid{display:flex;justify-content:space-between;flex-wrap:wrap;gap:24px;align-items:flex-start}
+.foot-brand{font-weight:800;font-size:16px;margin-bottom:8px}
+.foot-note{color:var(--txt3);font-size:12.5px;max-width:560px;line-height:1.8}
+.foot-meta{color:var(--txt3);font-size:12.5px;text-align:right;line-height:1.9}
+.disclaimer{margin-top:30px;padding-top:22px;border-top:1px solid var(--line);color:var(--txt3);font-size:11.5px;line-height:1.8}
+
+/* back to top */
+#toTop{position:fixed;right:22px;bottom:22px;width:44px;height:44px;border-radius:12px;
+  background:var(--grad);border:none;color:#06122b;font-size:20px;font-weight:800;cursor:pointer;
+  box-shadow:0 10px 30px rgba(59,130,246,.5);opacity:0;pointer-events:none;transition:.35s;z-index:800}
+#toTop.show{opacity:1;pointer-events:auto}
+
+/* responsive */
+@media(max-width:980px){
+  .nav-links{display:none;position:absolute;top:64px;left:0;right:0;flex-direction:column;
+    background:rgba(7,13,27,.97);padding:12px;border-bottom:1px solid var(--line)}
+  .nav-links.open{display:flex}
+  .nav-toggle{display:block}
+  .hero-stats{grid-template-columns:repeat(2,1fr)}
+  .grid-3,.grid-4,.verdict{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:640px){
+  section{padding:70px 0}
+  .grid-2,.grid-3,.grid-4,.verdict,.swot,.cert-grid,.ref-grid{grid-template-columns:1fr}
+  .hero-stats{grid-template-columns:repeat(2,1fr)}
+  .hero-meta{gap:8px 16px}
+  .flow{flex-direction:column}
+  .flow-arrow{transform:rotate(90deg)}
+}
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<!-- ============ NAV ============ -->
+<nav>
+  <div class="wrap">
+    <a href="#top" class="brand">
+      <span class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="#06122b" stroke-width="2"><path d="M12 2v20M2 12h20M5 5l14 14M19 5L5 19"/></svg></span>
+      <span>EH216-S <span style="color:var(--txt3);font-weight:500">| 深度调研</span></span>
+    </a>
+    <button class="nav-toggle" id="navToggle" aria-label="菜单">☰</button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#summary">摘要</a></li>
+      <li><a href="#method">方法</a></li>
+      <li><a href="#product">产品</a></li>
+      <li><a href="#tech">技术</a></li>
+      <li><a href="#safety">适航安全</a></li>
+      <li><a href="#scenarios">场景</a></li>
+      <li><a href="#market">市场</a></li>
+      <li><a href="#competition">竞品</a></li>
+      <li><a href="#conclusion">结论</a></li>
+      <li><a href="#references">引用</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<header class="hero" id="top">
+  <div class="hero-bg"><div class="grid-overlay"></div></div>
+  <div class="wrap hero-inner">
+    <span class="tag"><span class="pulse"></span> 飞行汽车技术基础 · 课程调研报告 · Case Study</span>
+    <h1>亿航 EH216-S
+      <span class="sub grad-txt">载人 eVTOL 的技术、场景与市场可行性全景分析</span>
+    </h1>
+    <p class="lead">
+      它不是"会飞的汽车"，而是一台<strong>无人驾驶、8 轴 16 旋翼的纯电垂直起降飞行器</strong>。
+      本报告以证据为边界，系统拆解它如何成为<strong>全球首个集齐 TC / PC / AC / OC 四证的载人 eVTOL</strong>，
+      并从技术可行性、应用场景与市场可行性三个维度给出可审计的判断。
+    </p>
+    <div class="hero-meta">
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> 证据截止：2026-11-22</span>
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> 阅读时长约 18 分钟</span>
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19h16M12 3l8 4v6c0 5-4 8-8 9-4-1-8-4-8-9V7z"/></svg> 来源：CAAC / 亿航 IR / 权威媒体</span>
+    </div>
+    <div class="hero-stats">
+      <div class="stat reveal"><div class="num grad-txt"><span class="cnt" data-to="4">0</span></div><div class="label">全球首张载人 eVTOL「四证」</div></div>
+      <div class="stat reveal"><div class="num grad-txt"><span class="cnt" data-to="16">0</span><span class="unit">旋翼</span></div><div class="label">8 轴分布式动力 · 全备份冗余</div></div>
+      <div class="stat reveal"><div class="num grad-txt"><span class="cnt" data-to="9">0</span><span class="unit">万+ 架次</span></div><div class="label">全球 23 国累计安全飞行</div></div>
+      <div class="stat reveal"><div class="num grad-txt"><span class="cnt" data-to="239">0</span><span class="unit">万元</span></div><div class="label">中国官方单机售价</div></div>
+    </div>
+  </div>
+  <div class="scroll-hint"><div class="mouse"></div>SCROLL TO EXPLORE</div>
+</header>
+
+<!-- ============ SUMMARY ============ -->
+<section id="summary">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Executive Summary</div>
+      <h2>执行摘要</h2>
+      <p>把传播热度剥去之后，真正可下的结论是什么？</p>
+    </div>
+    <div class="summary-box reveal">
+      <p>EH216-S 是全球<strong>第一型也是目前唯一型取得完整适航与运营资质</strong>的载人 eVTOL。它的意义不在于"飞行性能最强"，而在于率先跑通了<strong>从设计、制造到商业运营的合规闭环</strong>——这是整个行业从"能不能飞"转向"按什么标准飞"的分水岭。但其商业现实仍受制于<strong>航程短、载客少、交付节奏波动与监管审慎</strong>。</p>
+    </div>
+    <ul class="sum-list">
+      <li class="reveal"><div class="sum-n">01</div><div><b>资质是最大护城河。</b> <span>TC（2023.10）、AC（2023.12）、PC（2024.04）、OC（2025.03）依次落地，形成竞争者短期难以复制的制度性壁垒。</span></div></li>
+      <li class="reveal"><div class="sum-n">02</div><div><b>技术路线务实但能力有限。</b> <span>16 旋翼分布式纯电 + 全备份 + Fail-Safe，安全性高、结构简单；代价是 30 km 航程、约 25 分钟续航，仅够观光与短途接驳，无法承担城市通勤。</span></div></li>
+      <li class="reveal"><div class="sum-n">03</div><div><b>观光是唯一被验证的付费场景。</b> <span>广州、合肥 299 元早鸟票已开售，合肥累计飞行超 5000 架次；机场接驳、城际、城市空中交通仍需更长取证与起降网络。</span></div></li>
+      <li class="reveal"><div class="sum-n">04</div><div><b>市场空间真实，兑现节奏存疑。</b> <span>摩根士丹利预测全球 UAM 市场 2030 年达 550 亿美元；但亿航 2025 年前三季度营收 2.66 亿元、净亏损 2.42 亿元，规模化盈利尚未证明。</span></div></li>
+      <li class="reveal"><div class="sum-n">05</div><div><b>三层可行性判断。</b> <span>演示与取证可行 ✓、小规模商业运营初步可行 ◐、大规模城市通勤的运输化尚未证明 ✗——这是本报告最重要的结论。</span></div></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ METHOD ============ -->
+<section class="alt" id="method">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Method & Evidence</div>
+      <h2>研究设计与证据边界</h2>
+      <p>采用"证据分级的案例评估"框架，不计算跨来源的虚假精确均值。</p>
+    </div>
+    <div class="grid-3">
+      <div class="card reveal"><div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg></div><h3 style="margin-top:16px">检索来源</h3><p>中国民航局（CAAC）与亿航官网/投资者关系公告、亿航季度财报、赛迪顾问与摩根士丹利等行业研究、人民网/澎湃/证券时报等主流媒体，以及同行评审文献与适航标准。</p></div>
+      <div class="card reveal"><div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l9 4v6c0 5-4 8-9 9-5-1-9-4-9-9V7z"/><path d="M9 12l2 2 4-4"/></svg></div><h3 style="margin-top:16px">证据分级</h3><p>官方披露证明"企业宣称什么"；监管文件证明"合规状态"；第三方报道交叉核验；论文与标准解释技术机理；本报告计算仅作数量级判断，不冒充官方数据。</p></div>
+      <div class="card reveal"><div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="9"/></svg></div><h3 style="margin-top:16px">关键边界</h3><p>公开演示与取证证明"能飞、能合规运营"，但<strong style="color:var(--amber)">不等于</strong>持续巡航能力、规模化可靠性或盈利。不同来源对起飞重量（620/650 kg）等口径存在差异，报告据实标注。</p></div>
+    </div>
+    <div class="card reveal" style="margin-top:20px">
+      <h3><span class="icon-box" style="width:30px;height:30px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg></span> 核心研究问题</h3>
+      <p>EH216-S 的分布式电推进与冗余设计在物理与适航层面是否站得住脚？它能在哪些场景真正创造付费价值？在政策与资本的窗口期内，它的市场可行性是"确定会爆发"还是"有条件成立"？下文用一个产品档案、一条时间线和三组可行性分析逐一回答。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PRODUCT ============ -->
+<section id="product">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Product Profile</div>
+      <h2>产品档案：一台"空中出租车"的真实参数</h2>
+      <p>把营销语言还原为可核对的工程与商业规格。</p>
+    </div>
+    <div class="spec-grid">
+      <div class="spec reveal"><div class="k">最大起飞重量 MTOW</div><div class="v">620–650 <small>kg</small></div><div class="bar" style="width:78%"></div></div>
+      <div class="spec reveal"><div class="k">最大商载 / 载客</div><div class="v">~360 <small>kg · 2 人</small></div><div class="bar" style="width:70%"></div></div>
+      <div class="spec reveal"><div class="k">最大平飞速度</div><div class="v">130 <small>km/h</small></div><div class="bar" style="width:85%"></div></div>
+      <div class="spec reveal"><div class="k">最大航程</div><div class="v">30 <small>km</small></div><div class="bar" style="width:42%"></div></div>
+      <div class="spec reveal"><div class="k">续航时间</div><div class="v">~25 <small>分钟</small></div><div class="bar" style="width:38%"></div></div>
+      <div class="spec reveal"><div class="k">充电时间</div><div class="v">~120 <small>分钟</small></div><div class="bar" style="width:55%"></div></div>
+      <div class="spec reveal"><div class="k">机身尺寸（长×宽×高）</div><div class="v" style="font-size:19px">5.73 × 5.73 × 1.93 <small>m</small></div><div class="bar" style="width:60%"></div></div>
+      <div class="spec reveal"><div class="k">动力构型</div><div class="v" style="font-size:19px">8 轴 · 16 旋翼 <small>纯电</small></div><div class="bar" style="width:92%"></div></div>
+    </div>
+    <p class="note reveal">数据来源：亿航官网 EH216-S 页面、南方+（十五运会报道）、人民网/广东省政府（黄埔警用无人机入列）、百度百科词条。不同来源对最大起飞重量（620 kg / 650 kg）与巡航速度（90–130 km/h）表述略有差异，此处给出区间。官方中国售价约 239 万元/架；海外型号 VT35（长航程复合翼）售价约 650 万元/架。</p>
+
+    <div class="grid-3" style="margin-top:26px">
+      <div class="card reveal"><h3><span class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/></svg></span> 产品定位</h3><p>面向城市短途空中交通与文旅观光的<strong>无人驾驶载人航空器</strong>。预设航线自主飞行，无需飞行员，通过地面指挥调度系统实现多机集群管理。</p></div>
+      <div class="card reveal"><h3><span class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 6 6 1-4.5 4 1 6-5.5-3-5.5 3 1-6L3 9l6-1z"/></svg></span> 产品矩阵</h3><p>以 EH216-S 为平台衍生：EH216-F（消防款，600 米以下高层精准灭火）、EH216-L（物流款，250 kg 载重）；并推出长航程复合翼 VT35 覆盖城际/跨海场景。</p></div>
+      <div class="card reveal"><h3><span class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg></span> 关键差异化</h3><p>相较追求速度与航程的矢量推力/复合翼路线，EH216-S 以<strong>多旋翼的简单性 + 全冗余 + 无人驾驶</strong>换取更高的安全裕度与更快的取证路径——这是它率先拿证的结构性原因。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TIMELINE / SAFETY ============ -->
+<section class="alt" id="safety">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Airworthiness & Safety</div>
+      <h2>从"能不能飞"到"四证齐全"</h2>
+      <p>一条走了一千多天的取证长跑，也是它最难被复制的资产。</p>
+    </div>
+    <div class="grid-2" style="grid-template-columns:1.15fr .85fr;gap:40px">
+      <div class="timeline">
+        <div class="tl-item reveal"><div class="tl-date">2020.12</div><div class="tl-title">提交型号合格证（TC）申请</div><div class="tl-desc">全球首个载人无人驾驶航空器型号合格审定项目启动。</div></div>
+        <div class="tl-item reveal"><div class="tl-date">2022.02</div><div class="tl-title">CAAC 发布专用条件</div><div class="tl-desc">在没有现成适航标准的情况下，监管机构为载人 eVTOL 量身划定审定基础。</div></div>
+        <div class="tl-item key reveal"><div class="tl-date">2023.10.13</div><div class="tl-title">✦ 获颁型号合格证 TC</div><div class="tl-desc">全球第一型取得 TC 的载人 eVTOL，历史性突破。</div></div>
+        <div class="tl-item key reveal"><div class="tl-date">2023.12.21</div><div class="tl-title">✦ 获颁标准适航证 AC</div><div class="tl-desc">具备合法飞行资质。</div></div>
+        <div class="tl-item key reveal"><div class="tl-date">2024.04.07</div><div class="tl-title">✦ 获颁生产许可证 PC</div><div class="tl-desc">打开批量生产通道，云浮基地扩建至 4.8 万平方米，规划年产能 1000 架。</div></div>
+        <div class="tl-item key reveal"><div class="tl-date">2025.03.28</div><div class="tl-title">✦ 运营商获运营合格证 OC</div><div class="tl-desc">亿航通航与合翼航空获首批载人类无人驾驶航空器 OC，商业载客运营合规闭环形成。</div></div>
+        <div class="tl-item reveal"><div class="tl-date">2026 →</div><div class="tl-title">公众售票与场景拓展</div><div class="tl-desc">广州、合肥面向公众售票；进入民航局首批适航审定合规企业名录；新《民用航空法》7 月施行。</div></div>
+      </div>
+      <div>
+        <div class="card reveal">
+          <h3><span class="icon-box" style="background:rgba(52,211,153,.14);color:var(--green)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-4 8-8 9-4-1-8-4-8-9V6z"/></svg></span> 取证背后的验证量</h3>
+          <div class="grid-2" style="gap:12px;margin-top:16px">
+            <div class="stat"><div class="num" style="font-size:28px;color:var(--cyan)">1000<span class="unit">+ 天</span></div><div class="label">审定历时</div></div>
+            <div class="stat"><div class="num" style="font-size:28px;color:var(--cyan)">40,000<span class="unit">+</span></div><div class="label">审定试飞架次</div></div>
+            <div class="stat"><div class="num" style="font-size:28px;color:var(--cyan)">500<span class="unit">+ 科目</span></div><div class="label">评估测试</div></div>
+            <div class="stat"><div class="num" style="font-size:28px;color:var(--cyan)">450<span class="unit">+ 科目</span></div><div class="label">符合性验证</div></div>
+          </div>
+          <p class="note" style="margin-top:16px">含 65 个大项取证测试，覆盖机臂结构强度、起落架静力/跌落、座椅安全带强度、整机静力与螺旋桨等试验。数据来源：亿航官网适航认证页面（引 CAAC 民航报）。</p>
+        </div>
+        <div class="cert-grid reveal" style="margin-top:14px;grid-template-columns:repeat(2,1fr)">
+          <div class="cert"><div class="ic">📜</div><div class="code">TC</div><div class="nm">型号合格证</div><div class="dt">2023.10.13</div></div>
+          <div class="cert"><div class="ic">🛩️</div><div class="code">AC</div><div class="nm">标准适航证</div><div class="dt">2023.12.21</div></div>
+          <div class="cert"><div class="ic">🏭</div><div class="code">PC</div><div class="nm">生产许可证</div><div class="dt">2024.04.07</div></div>
+          <div class="cert"><div class="ic">🎫</div><div class="code">OC</div><div class="nm">运营合格证</div><div class="dt">2025.03.28</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TECH ============ -->
+<section id="tech">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Architecture & Key Tech</div>
+      <h2>系统架构与关键技术</h2>
+      <p>真正的创新不在"某个零件"，而在把电推进、冗余、自动驾驶与集群调度整合成一个可取证的系统。</p>
+    </div>
+    <div class="chart-card reveal" style="margin-bottom:20px">
+      <div class="chart-title">分布式电推进 eVTOL 系统架构（以 EH216-S 为原型）</div>
+      <div class="chart-sub">从能量到控制信号的完整链路 · 点击展开概念理解</div>
+      <div class="flow">
+        <div class="flow-col">
+          <div class="flow-title">能源层</div>
+          <div class="flow-node"><b>动力电池</b><span>高能量密度锂电</span></div>
+          <div class="flow-node"><b>配电 / BMS</b><span>热管理与均衡</span></div>
+        </div>
+        <div class="flow-col">
+          <div class="flow-title">推进层</div>
+          <div class="flow-node"><b>16 电机 + 螺旋桨</b><span>8 轴分布式冗余</span></div>
+          <div class="flow-node"><b>电调 ESC</b><span>独立驱动控制</span></div>
+        </div>
+        <div class="flow-col">
+          <div class="flow-title">飞控层</div>
+          <div class="flow-node"><b>多冗余飞控</b><span>Fail-Safe 系统</span></div>
+          <div class="flow-node"><b>导航 / 传感</b><span>RTK + 惯导 + 感知</span></div>
+        </div>
+        <div class="flow-col">
+          <div class="flow-title">运营层</div>
+          <div class="flow-node"><b>自动驾驶</b><span>预设航线自主飞行</span></div>
+          <div class="flow-node"><b>地面调度中心</b><span>多机集群管理</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="grid-4">
+      <div class="card scen reveal"><h3>🌀 分布式推进冗余</h3><p>8 轴 16 旋翼布局，关键飞行部件全备份设计。个别螺旋桨发生故障时，剩余旋翼仍可支撑平稳飞行，是安全性的物理底座。</p></div>
+      <div class="card scen reveal"><h3>🧠 全自主飞行控制</h3><p>无需飞行员，按预设航线自主起降与巡航。飞控信号传输时延低于 100 ms，配合地面指挥调度系统实现集群有序运行。</p></div>
+      <div class="card scen reveal"><h3>🛡️ Fail-Safe 安全体系</h3><p>多冗余飞控 + 故障隔离 + 应急降落逻辑。整机构型以"安全性优先"取舍，牺牲航程换取故障工况下的可控性。</p></div>
+      <div class="card scen reveal"><h3>🔇 低噪零排放</h3><p>纯电驱动、运行噪声低、零运营排放，使其适配城市核心区场景，可在楼顶、公园空地、交通枢纽旁搭建简易起降点。</p></div>
+    </div>
+    <div class="card reveal" style="margin-top:20px;border-color:var(--line2)">
+      <h3>⚙️ 技术的根本约束：能量密度天花板</h3>
+      <p>多旋翼构型在巡航时仍需旋翼持续提供全部升力，能耗高、航程短。EH216-S 的 30 km 航程与约 25 分钟续航，正是锂电池能量密度与旋翼效率的直接结果。行业测算电池能量密度从 2023 年约 250 Wh/kg 提升至 2026 年约 400 Wh/kg，但在可预见的未来，纯电多旋翼仍难以承担真正的城市长距离通勤——这也解释了亿航为何推出复合翼 VT35 作为补充。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SCENARIOS ============ -->
+<section class="alt" id="scenarios">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Application Scenarios</div>
+      <h2>应用场景：谁在为"飞的"买单？</h2>
+      <p>从已真正收费的场景，到仍停留在规划中的愿景，分层看待。</p>
+    </div>
+    <div class="grid-3">
+      <div class="card scen reveal"><div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h20M12 2v20"/><circle cx="12" cy="12" r="9"/></svg></div><h3 style="margin-top:16px">低空文旅观光 <span class="pill p-g">已验证付费</span></h3><p>最成熟、唯一被验证的付费场景。广州穗港码头、合肥骆岗公园已面向公众售票，早鸟/特惠票价 <strong style="color:var(--amber)">299 元/人</strong>，广州航线全程约 3.5 分钟；哈尔滨冰雪大世界 498 元/人次，创下单机日均超 50 架次记录。</p><div class="tag-row"><span class="tag">广州 · 穗港码头</span><span class="tag">合肥 · 骆岗公园</span><span class="tag">景区 15–30 min</span></div></div>
+      <div class="card scen reveal"><div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-4 8-8 9-4-1-8-4-8-9V6z"/></svg></div><h3 style="margin-top:16px">公共服务 / 应急 <span class="pill p-g">落地中</span></h3><p>2026 年 1 月，全国首台正式列装且获适航证的警用载人无人机 EH216S 在广州黄埔公安入列，用于巡逻、应急处突、交通疏导与搜救。EH216-F 消防款可实现 600 米以下高层精准灭火。</p><div class="tag-row"><span class="tag">警务巡逻</span><span class="tag">高层消防</span><span class="tag">应急救援</span></div></div>
+      <div class="card scen reveal"><div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h11v10H3zM14 10h4l3 3v4h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg></div><h3 style="margin-top:16px">物流与城际接驳 <span class="pill p-a">拓展中</span></h3><p>EH216-L 物流款支持 250 kg 载重；面向城市间、跨海岛、山区连接，由长航程复合翼 VT35 承担。机场快线、城际通勤等更大市场，需要更密集的起降网络与更长的取证周期支撑。</p><div class="tag-row"><span class="tag">物资运输</span><span class="tag">跨海岛</span><span class="tag">机场接驳</span></div></div>
+    </div>
+    <div class="grid-2 reveal" style="margin-top:20px">
+      <div class="card"><h3>📊 已发生的运营数据</h3><p>合肥骆岗公园累计飞行超 <strong style="color:var(--cyan)">5000 架次</strong>（载人 430 架次），规划 4 架每日执飞 14 个班次；广州、合肥两地累计安全飞行超 3000 架次。EH216-S 在全球 23 个国家和地区累计安全飞行超 <strong style="color:var(--cyan)">9 万架次</strong>。2026 年央视春晚合肥分会场，16 台 EH216-S 编队同飞，创无人驾驶载人 eVTOL 公开飞行数量纪录。</p></div>
+      <div class="card"><h3>🚧 尚未兑现的愿景</h3><p>城市空中通勤（"空中打车"）仍受制于四大瓶颈：<strong>安全公众接受度</strong>（调查仅约 38% 愿意尝试）、<strong>噪音与夜间运营限制</strong>、<strong>低空空域管理与 UTM 系统</strong>、<strong>单票成本与基础设施投入</strong>。行业共识时间表是 2027 取证元年、2028 初步量产、2030 年前后商业化闭环。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MARKET ============ -->
+<section id="market">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Market Feasibility</div>
+      <h2>市场可行性：万亿叙事与兑现节奏</h2>
+      <p>把"万亿市场"拆成可核对的预测、财报与单位经济模型。</p>
+    </div>
+
+    <div class="grid-2" style="margin-bottom:20px">
+      <div class="chart-card reveal">
+        <div class="chart-title">全球城市空中交通（UAM）市场规模预测</div>
+        <div class="chart-sub">单位：亿美元 · 来源：摩根士丹利（经行业报告转引）</div>
+        <div class="chart-wrap"><svg class="chart" id="chartUam" viewBox="0 0 520 260"></svg></div>
+        <div class="legend"><span><i style="background:#22d3ee"></i>全球 UAM 市场（亿美元）</span></div>
+      </div>
+      <div class="chart-card reveal">
+        <div class="chart-title">中国低空经济总体规模</div>
+        <div class="chart-sub">单位：亿元人民币 · 来源：赛迪顾问（2026 为预测值）</div>
+        <div class="chart-wrap"><svg class="chart" id="chartLow" viewBox="0 0 520 260"></svg></div>
+        <div class="legend"><span><i style="background:#8b5cf6"></i>市场规模（亿元）</span></div>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-bottom:20px">
+      <div class="chart-card reveal">
+        <div class="chart-title">亿航智能季度营收与交付</div>
+        <div class="chart-sub">柱：营收（百万元人民币）· 线：EH216 系列交付（架）· 来源：亿航 IR / 澎湃 / 证券时报</div>
+        <div class="chart-wrap"><svg class="chart" id="chartFin" viewBox="0 0 520 280"></svg></div>
+        <div class="legend"><span><i style="background:#3b82f6"></i>营收（百万元）</span><span><i style="background:#fbbf24"></i>交付量（架）</span></div>
+      </div>
+      <div class="card reveal">
+        <h3>💰 单位经济与财务现实</h3>
+        <p><b style="color:var(--txt)">售价与毛利：</b>EH216-S 官方售价约 239 万元/架，公司近年毛利率稳定在 <strong style="color:var(--green)">约 60–62%</strong>，单机价值量近 100 万元。VT35 售价约 650 万元/架。</p>
+        <p><b style="color:var(--txt)">营收与亏损：</b>2025 年前三季度营收 2.66 亿元、净亏损 2.42 亿元（同比收窄约 32%）；Q3 单季营收 9247 万元，同比下降 27.8%。2024 全年交付 216 架，但 2025 Q1 仅交付 11 架，Q3 交付 42 架（含首架 VT35），节奏波动显著。</p>
+        <p><b style="color:var(--txt)">现金与目标：</b>截至 2025-03-31 现金及等价物约 11.14 亿元；管理层曾维持 2025 全年约 5 亿元营收预期，但交付受客户付款节奏影响明显。</p>
+        <p class="note">数据口径来自亿航 2025 Q1/Q3 财报及权威媒体报道，个别季度数据以公告为准。</p>
+      </div>
+    </div>
+
+    <div class="sec-head reveal" style="margin:20px 0 24px"><h2 style="font-size:26px">三层可行性打分</h2><p>综合技术、需求与制度，把"可行性"拆成可操作的判断。</p></div>
+    <div class="verdict">
+      <div class="v-item reveal"><div class="v-top"><span class="v-name">① 技术演示与取证</span><span class="v-score v-green">可行 ✓</span></div><div class="meter"><i data-w="92" style="background:linear-gradient(90deg,#34d399,#22d3ee)"></i></div><p>16 旋翼冗余 + 全自主飞控已通过 4 万+ 架次审定试飞，四证齐全，适航与安全层面站得住脚。</p></div>
+      <div class="v-item reveal"><div class="v-top"><span class="v-name">② 小规模商业运营</span><span class="v-score v-amber">初步可行 ◐</span></div><div class="meter"><i data-w="62" style="background:linear-gradient(90deg,#fbbf24,#fb923c)"></i></div><p>观光场景已售票、公共服务已列装，但付费航班占比低，机场接驳与城际仍需起降网络与航线审批。</p></div>
+      <div class="v-item reveal"><div class="v-top"><span class="v-name">③ 大规模城市通勤</span><span class="v-score v-red">未证明 ✗</span></div><div class="meter"><i data-w="28" style="background:linear-gradient(90deg,#fb7185,#f43f5e)"></i></div><p>30 km 航程、25 min 续航无法承担通勤；空域管理、基础设施、成本与公众接受度均存在结构性障碍。</p></div>
+    </div>
+
+    <div class="grid-2 reveal" style="margin-top:20px">
+      <div class="swot sw-s"><h4><span class="badge">S</span> 优势 Strengths</h4><ul>
+        <li>全球唯一载人 eVTOL 四证齐全，制度性壁垒显著</li>
+        <li>多旋翼冗余 + Fail-Safe，安全裕度高、构型简单</li>
+        <li>无人驾驶，规避飞行员稀缺与人力成本</li>
+        <li>毛利率稳定约 60%，已形成真实付费场景</li>
+      </ul></div>
+      <div class="swot sw-w"><h4><span class="badge">W</span> 劣势 Weaknesses</h4><ul>
+        <li>航程 30 km、续航约 25 min，能力边界明显</li>
+        <li>载客仅 2 人，单机运力与单位经济性受限</li>
+        <li>持续亏损，交付节奏受客户付款影响波动大</li>
+        <li>充电约 120 min，周转效率制约高频运营</li>
+      </ul></div>
+      <div class="swot sw-o"><h4><span class="badge">O</span> 机会 Opportunities</h4><ul>
+        <li>中国低空经济 2026 年有望破万亿，政策密集加持</li>
+        <li>摩根士丹利预测 2030 全球 UAM 达 550 亿美元</li>
+        <li>文旅、警务、消防、应急等场景需求真实存在</li>
+        <li>新《民航法》与标准体系落地，制度环境趋稳</li>
+      </ul></div>
+      <div class="swot sw-t"><h4><span class="badge">T</span> 威胁 Threats</h4><ul>
+        <li>2026 下半年监管趋于审慎，部分项目审批放缓</li>
+        <li>峰飞货运已出海赚钱、沃兰特订单规模庞大，竞争加剧</li>
+        <li>行业预计 2026 年迎来第一波破产潮，融资环境收紧</li>
+        <li>起降场、空管等基础设施节奏滞后于取证</li>
+      </ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ COMPETITION ============ -->
+<section class="alt" id="competition">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Competitive Landscape</div>
+      <h2>竞品比较：三种路径，三种节奏</h2>
+      <p>亿航抢跑载人观光、峰飞货运先行出海、沃兰特融资订单领先——谁先跑通商业模式仍未定论。</p>
+    </div>
+    <div class="table-wrap reveal">
+      <table>
+        <thead><tr><th>企业 / 机型</th><th>构型 / 定位</th><th>关键能力</th><th>适航进度</th><th>商业状态</th></tr></thead>
+        <tbody>
+          <tr class="hl-col"><td>亿航智能 EH216-S</td><td>多旋翼 · 2 座 · 无人驾驶</td><td>航程 30 km / 130 km/h / 239 万元</td><td><span class="pill p-g">四证齐全 · 全球唯一</span></td><td>观光售票、警务列装已落地</td></tr>
+          <tr><td>峰飞航空 V2000CG 凯瑞鸥</td><td>2 吨级货运 · 无人驾驶</td><td>商载 400 kg / 航程 200 km / 298 万元</td><td><span class="pill p-g">TC + 印尼 VTC</span></td><td>货运航线运营，框架订单超 1000 架</td></tr>
+          <tr><td>峰飞 V2000EM 盛世龙</td><td>复合翼 · 5–6 座载人</td><td>航程 250 km</td><td><span class="pill p-a">取证中 · 目标 2027</span></td><td>研发验证阶段</td></tr>
+          <tr><td>沃兰特 VE25</td><td>复合翼 · 载人</td><td>意向订单超 1900 架（确认 14 架）</td><td><span class="pill p-a">取证窗口 2026 底–2027 初</span></td><td>完成国内首次有人驾驶转换飞行</td></tr>
+          <tr><td>小鹏汇天</td><td>多旋翼 / 陆空一体</td><td>分体式飞行汽车等产品线</td><td><span class="pill p-a">首批适航审定合规名录</span></td><td>研发与试点阶段</td></tr>
+          <tr><td>Joby Aviation（美）</td><td>矢量推力 · 有人驾驶</td><td>航程远超多旋翼，性能领先</td><td><span class="pill p-a">FAA 取证推进中</span></td><td>付费载客试运营</td></tr>
+          <tr><td>Volocopter（德）</td><td>多旋翼 · 有人驾驶</td><td>城市 eVTOL 先驱</td><td><span class="pill p-a">EASA SC-VTOL</span></td><td>赛事驱动示范运营</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note reveal">注：各企业进度为公开信息梳理，时间节点可能随项目状态调整。数据来源见参考文献。货运 eVTOL"凯瑞鸥"与载人"盛世龙"分属峰飞不同产品线。</p>
+  </div>
+</section>
+
+<!-- ============ RISKS ============ -->
+<section id="risks">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Risks & Challenges</div>
+      <h2>风险与挑战</h2>
+      <p>取证只是入场券，从"能飞"到"能赚钱"之间还横着一系列卡点。</p>
+    </div>
+    <div class="card reveal">
+      <div class="risk-row"><span class="risk-lv r-h">高</span><div class="risk-body"><b>监管审慎与审批节奏</b><p>2026 年 6 月底以来监管部门对低空行业采取更审慎态度，部分项目审批、交付验收和商业运营放缓，亿航一度撤回全年收入指引。运营许可、航线审批、保险定价、乘客责任划分每一项都可能成为卡点。</p></div></div>
+      <div class="risk-row"><span class="risk-lv r-h">高</span><div class="risk-body"><b>能力边界与场景单一</b><p>30 km 航程、约 25 分钟续航使 EH216-S 只能做景区观光与短途展示。观光是当前唯一被验证的付费场景，天花板明显；真正高频的城市通勤依赖下一代长航程机型与基础设施。</p></div></div>
+      <div class="risk-row"><span class="risk-lv r-m">中</span><div class="risk-body"><b>交付与现金流的波动性</b><p>2024 年交付 216 架，2025 Q1 骤降至 11 架、Q3 回升至 42 架，主要受客户付款节奏影响。持续净亏损下，交付确认的时点直接左右季度业绩与市场信心。</p></div></div>
+      <div class="risk-row"><span class="risk-lv r-m">中</span><div class="risk-body"><b>基础设施"时差"</b><p>起降场（Vertiport）、通导监设施的建设周期以年计，而 eVTOL 取证窗口以月计，两者节奏错位。枢纽型起降点造价 5000 万–1 亿元，网络密度不足制约规模化运营。</p></div></div>
+      <div class="risk-row"><span class="risk-lv r-l">低</span><div class="risk-body"><b>公众接受度与噪音</b><p>公众对安全性的担忧、城市上空飞行风险与隐私顾虑仍需长期科普与安全记录积累；夜间运营受噪声限制。随着票价下降与安全记录增长，此项风险有望逐步缓解。</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONCLUSION ============ -->
+<section class="alt" id="conclusion">
+  <div class="wrap">
+    <div class="conclusion reveal">
+      <div class="eyebrow" style="justify-content:center">Conclusion</div>
+      <h3>结论：一场"制度领先、能力有限、兑现待考"的先行者实验</h3>
+      <p>EH216-S 用一千多天的取证长跑，把"载人 eVTOL"从概念推到了可以合法售票的现实。它在<strong style="color:var(--cyan)">适航与合规维度建立了真实的、短期难被复制的领先</strong>，并在文旅观光、公共服务等有限场景中验证了付费闭环。</p>
+      <p class="big">但拿证 ≠ 盈利，观光 ≠ 通勤。</p>
+      <p>受制于航程、载客、基础设施与监管节奏，它的大规模城市通勤愿景仍未证明。对课程作业而言，EH216-S 的价值恰在于它提醒我们：<strong style="color:var(--amber)">评价一项飞行汽车技术，不能只看最震撼的视频，而要看飞行包线、安全目标、监管路径与全寿命成本</strong>——证据，才是结论的地基。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ REFERENCES ============ -->
+<section id="references">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">References</div>
+      <h2>参考文献与数据来源</h2>
+      <p>所有关键数据均可回溯至以下公开来源，按引用顺序编号。</p>
+    </div>
+    <div class="ref-grid">
+      <a class="ref reveal" href="https://www.ehang.com/ehang216s/airworthiness" target="_blank" rel="noopener"><span class="rn">[1]</span><span class="rt"><b>亿航官网 · EH216-S 适航认证历程</b>适航时间线、1000+ 天、4 万+ 试飞、500+/450+ 科目等审定数据（引 CAAC 民航报）</span></a>
+      <a class="ref reveal" href="https://www.ehang.com/" target="_blank" rel="noopener"><span class="rn">[2]</span><span class="rt"><b>EHang 官方网站</b>产品矩阵、运营示范点（广州穗港码头、合肥骆岗、深圳罗湖、珠海桂山岛等）</span></a>
+      <a class="ref reveal" href="https://ir.ehang.com/news-releases/news-release-details/ehang-reports-first-quarter-2025-unaudited-financial-results" target="_blank" rel="noopener"><span class="rn">[3]</span><span class="rt"><b>亿航智能 2025 Q1 财报（投资者关系）</b>营收 2610 万元、交付 11 架、毛利率 62.4%、现金 11.14 亿元、OC 与 VT35 进展</span></a>
+      <a class="ref reveal" href="https://www.thepaper.cn/newsDetail_forward_32054148" target="_blank" rel="noopener"><span class="rn">[4]</span><span class="rt"><b>澎湃新闻 · 亿航三季度营收降 28%</b>Q3 营收 9247 万元、交付 42 架、VT35 售价 650 万元、商业化展望</span></a>
+      <a class="ref reveal" href="https://stcn.com/article/detail/3521347.html" target="_blank" rel="noopener"><span class="rn">[5]</span><span class="rt"><b>证券时报 · 亿航三季度收入承压</b>前三季度营收 2.66 亿元、全年 5 亿元目标、运营支出结构</span></a>
+      <a class="ref reveal" href="https://gd.people.com.cn/BIG5/n2/2026/0111/c123932-41469350.html" target="_blank" rel="noopener"><span class="rn">[6]</span><span class="rt"><b>人民网 · 全国首台警用载人无人机在穗入列</b>EH216S 参数（650 kg / 130 km/h / 30 km）、黄埔公安列装</span></a>
+      <a class="ref reveal" href="https://static.nfnews.com/content/202512/12/c11990702.html" target="_blank" rel="noopener"><span class="rn">[7]</span><span class="rt"><b>南方+ · 全球首款"持证上岗"空中出租车</b>四证、速度与航程、载客与多螺旋桨备份设计</span></a>
+      <a class="ref reveal" href="https://big5.china.com.cn/txt/2026-09/07/content_118683999.shtml" target="_blank" rel="noopener"><span class="rn">[8]</span><span class="rt"><b>中国网 · 探访合翼航空（合肥）</b>骆岗 5000+ 架次、载人 430 架次、春晚 16 台编队、EH216-F/L 衍生型号</span></a>
+      <a class="ref reveal" href="https://www.sgpjbg.com/info/a77b7b829107c0a021e50a1a53fbd1f5.html" target="_blank" rel="noopener"><span class="rn">[9]</span><span class="rt"><b>2026 年 eVTOL 行业报告（转引摩根士丹利）</b>全球 UAM 2025→2050 市场预测、EH216-S 官方价 239 万元、单机价值量拆分</span></a>
+      <a class="ref reveal" href="https://pdf.dfcfw.com/pdf/H3_AP202403151626834333_1.pdf" target="_blank" rel="noopener"><span class="rn">[10]</span><span class="rt"><b>西南证券 · 低空经济专题研究（PDF）</b>eVTOL 构型分类、Morgan Stanley 市场预测、产业链梳理</span></a>
+      <a class="ref reveal" href="https://www.sgpjbg.com.cn/searchtag/27151765.html" target="_blank" rel="noopener"><span class="rn">[11]</span><span class="rt"><b>低空经济产业研究资料汇编</b>票价（299/498 元）、9 万架次、2026 上半年融资 88 亿元、行业时间表</span></a>
+      <a class="ref reveal" href="https://events@www.industrysourcing.cn/article/479368" target="_blank" rel="noopener"><span class="rn">[12]</span><span class="rt"><b>荣格工业资源网 · eVTOL 载人商业模式比较</b>亿航/峰飞/沃兰特路径对比、V2000CG 参数、订单数据</span></a>
+    </div>
+    <p class="note reveal" style="margin-top:20px">证据截止：2026-11-22。市场规模预测属机构预测口径，存在不确定性；财报数据以公司公告为准。本报告为课程作业，不构成投资建议。</p>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="foot-brand grad-txt">EH216-S · 飞行汽车技术调研</div>
+        <div class="foot-note">针对飞行汽车某技术/产品的全方位调研与分析 · 作业形式：Web 网页 · 入口文件：index.html。研究对象选定为亿航智能 EH216-S 载人 eVTOL。</div>
+      </div>
+      <div class="foot-meta">
+        证据截止：2026-11-22<br>
+        数据来源：CAAC / EHang IR / 权威媒体<br>
+        Fundamentals of Flying Vehicle Technology · 2026
+      </div>
+    </div>
+    <div class="disclaimer">免责声明：本页面为《飞行汽车技术基础》课程调研作业，所有数据均标注公开来源，仅用于学术与技术分析。文中机构预测与市场数据存在不确定性，不构成任何投资、采购或运营建议。部分图片/图标为示意性质。</div>
+  </div>
+</footer>
+
+<button id="toTop" aria-label="返回顶部">↑</button>
+
+<script>
+/* ---- progress bar ---- */
+const bar=document.getElementById('progress');
+const toTop=document.getElementById('toTop');
+function onScroll(){
+  const h=document.documentElement.scrollHeight-window.innerHeight;
+  bar.style.width=(window.scrollY/h*100)+'%';
+  toTop.classList.toggle('show',window.scrollY>500);
+}
+window.addEventListener('scroll',onScroll,{passive:true});onScroll();
+toTop.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+
+/* ---- mobile nav ---- */
+const tog=document.getElementById('navToggle'),links=document.getElementById('navLinks');
+tog.addEventListener('click',()=>links.classList.toggle('open'));
+links.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>links.classList.remove('open')));
+
+/* ---- reveal on scroll ---- */
+const io=new IntersectionObserver((es)=>{
+  es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})
+},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+/* ---- counters ---- */
+function runCounter(el){
+  const to=+el.dataset.to,start=performance.now(),dur=1400;
+  function step(t){let p=Math.min((t-start)/dur,1);let e=1-Math.pow(1-p,3);
+    el.textContent=Math.round(to*e).toLocaleString();if(p<1)requestAnimationFrame(step);}
+  requestAnimationFrame(step);
+}
+const cio=new IntersectionObserver((es)=>{
+  es.forEach(e=>{if(e.isIntersecting){runCounter(e.target);cio.unobserve(e.target);}})
+},{threshold:.6});
+document.querySelectorAll('.cnt').forEach(el=>cio.observe(el));
+
+/* ---- meters ---- */
+const mio=new IntersectionObserver((es)=>{
+  es.forEach(e=>{if(e.isIntersecting){e.target.style.width=e.target.dataset.w+'%';mio.unobserve(e.target);}})
+},{threshold:.6});
+document.querySelectorAll('.meter i').forEach(el=>mio.observe(el));
+
+/* ---- nav active highlight ---- */
+const secs=[...document.querySelectorAll('section[id],header[id]')];
+const navAs=[...document.querySelectorAll('.nav-links a')];
+const nio=new IntersectionObserver((es)=>{
+  es.forEach(e=>{if(e.isIntersecting){
+    navAs.forEach(a=>a.style.color='');
+    const a=navAs.find(x=>x.getAttribute('href')==='#'+e.target.id);
+    if(a)a.style.color='var(--cyan)';
+  }})
+},{rootMargin:'-45% 0px -50% 0px'});
+secs.forEach(s=>nio.observe(s));
+
+/* ============ SVG CHARTS ============ */
+function svg(id){return document.getElementById(id)}
+function gridLines(s,W,H,pad,max,steps,unit){
+  let s2='';
+  for(let i=0;i<=steps;i++){
+    let y=pad.t+(H-pad.t-pad.b)*i/steps;
+    let val=Math.round(max*(1-i/steps));
+    s2+=`<line x1="${pad.l}" y1="${y}" x2="${W-pad.r}" y2="${y}" stroke="rgba(255,255,255,.07)" stroke-width="1"/>`;
+    s2+=`<text x="${pad.l-8}" y="${y+4}" fill="#6f83a8" font-size="10" text-anchor="end">${val}${unit||''}</text>`;
+  }
+  return s2;
+}
+
+/* UAM area+line chart */
+(function(){
+  const s=svg('chartUam'),W=520,H=260,pad={l:52,r:16,t:18,b:34};
+  const data=[{y:'2025',v:100},{y:'2030',v:550},{y:'2040',v:10000},{y:'2050',v:90000}];
+  // use sqrt-ish visual scale to fit huge range, label real values
+  const vals=data.map(d=>Math.sqrt(d.v));const max=Math.max(...vals);
+  const iw=W-pad.l-pad.r,ih=H-pad.t-pad.b;
+  const pts=data.map((d,i)=>({x:pad.l+iw*i/(data.length-1),y:pad.t+ih-(vals[i]/max)*ih*.92,d}));
+  let out='';
+  // fake grid with real value labels
+  [90000,60000,30000,10000,0].forEach((v,i)=>{
+    let y=pad.t+ih*i/4;
+    out+=`<line x1="${pad.l}" y1="${y}" x2="${W-pad.r}" y2="${y}" stroke="rgba(255,255,255,.07)"/>`;
+    out+=`<text x="${pad.l-8}" y="${y+4}" fill="#6f83a8" font-size="10" text-anchor="end">${v>=10000?v/10000+'万':v}</text>`;
+  });
+  let line=pts.map(p=>`${p.x},${p.y}`).join(' ');
+  let area=`M${pts[0].x},${pad.t+ih} `+pts.map(p=>`L${p.x},${p.y}`).join(' ')+` L${pts[pts.length-1].x},${pad.t+ih} Z`;
+  out+=`<defs><linearGradient id="ga" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#22d3ee" stop-opacity=".45"/><stop offset="1" stop-color="#22d3ee" stop-opacity="0"/></linearGradient></defs>`;
+  out+=`<path d="${area}" fill="url(#ga)"/>`;
+  out+=`<polyline points="${line}" fill="none" stroke="#22d3ee" stroke-width="2.5" stroke-linejoin="round"/>`;
+  pts.forEach(p=>{
+    out+=`<circle cx="${p.x}" cy="${p.y}" r="5" fill="#0b1428" stroke="#22d3ee" stroke-width="2.5"/>`;
+    let lab=p.d.v>=10000?(p.d.v/10000)+'万亿':p.d.v+'亿';
+    out+=`<text x="${p.x}" y="${p.y-13}" fill="#e8eefc" font-size="11" font-weight="700" text-anchor="middle">${lab}</text>`;
+    out+=`<text x="${p.x}" y="${H-10}" fill="#9fb0d0" font-size="11" text-anchor="middle">${p.d.y}</text>`;
+  });
+  s.innerHTML=out;
+})();
+
+/* China low-altitude economy bar chart */
+(function(){
+  const s=svg('chartLow'),W=520,H=260,pad={l:56,r:16,t:18,b:34};
+  const data=[{y:'2023',v:5059.5},{y:'2024',v:6702.5},{y:'2025',v:8591.7},{y:'2026*',v:10645}];
+  const max=12000,iw=W-pad.l-pad.r,ih=H-pad.t-pad.b;
+  let out=gridLines(s,W,H,pad,max,4,'');
+  const bw=iw/data.length*.55;
+  data.forEach((d,i)=>{
+    let x=pad.l+iw*(i+.5)/data.length-bw/2;
+    let h=(d.v/max)*ih*.9;let y=pad.t+ih-h;
+    out+=`<defs><linearGradient id="gb${i}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a78bfa"/><stop offset="1" stop-color="#8b5cf6" stop-opacity=".35"/></linearGradient></defs>`;
+    out+=`<rect x="${x}" y="${y}" width="${bw}" height="${h}" rx="6" fill="url(#gb${i})"/>`;
+    out+=`<text x="${x+bw/2}" y="${y-7}" fill="#e8eefc" font-size="10" font-weight="700" text-anchor="middle">${(d.v/10000).toFixed(2)}万亿</text>`;
+    out+=`<text x="${x+bw/2}" y="${H-10}" fill="#9fb0d0" font-size="11" text-anchor="middle">${d.y}</text>`;
+  });
+  s.innerHTML=out;
+})();
+
+/* EHang financial combo chart */
+(function(){
+  const s=svg('chartFin'),W=520,H=280,pad={l:46,r:44,t:20,b:36};
+  const data=[{y:'25 Q1',rev:26.1,unit:11},{y:'25 Q2',rev:147.2,unit:68},{y:'25 Q3',rev:92.5,unit:42}];
+  const maxRev=160,iw=W-pad.l-pad.r,ih=H-pad.t-pad.b;
+  let out=gridLines(s,W,H,pad,maxRev,4,'');
+  const bw=iw/data.length*.5;
+  data.forEach((d,i)=>{
+    let x=pad.l+iw*(i+.5)/data.length-bw/2;
+    let h=(d.rev/maxRev)*ih*.85;let y=pad.t+ih-h;
+    out+=`<rect x="${x}" y="${y}" width="${bw}" height="${h}" rx="6" fill="#3b82f6" fill-opacity=".85"/>`;
+    out+=`<text x="${x+bw/2}" y="${y-7}" fill="#e8eefc" font-size="10" font-weight="700" text-anchor="middle">${d.rev}</text>`;
+    out+=`<text x="${x+bw/2}" y="${H-12}" fill="#9fb0d0" font-size="11" text-anchor="middle">${d.y}</text>`;
+  });
+  // delivery line on right axis (max 80)
+  const pts=data.map((d,i)=>({x:pad.l+iw*(i+.5)/data.length,y:pad.t+ih-(d.unit/80)*ih*.85,d}));
+  out+=`<polyline points="${pts.map(p=>`${p.x},${p.y}`).join(' ')}" fill="none" stroke="#fbbf24" stroke-width="2.5"/>`;
+  pts.forEach(p=>{
+    out+=`<circle cx="${p.x}" cy="${p.y}" r="4.5" fill="#0b1428" stroke="#fbbf24" stroke-width="2.5"/>`;
+    out+=`<text x="${p.x+9}" y="${p.y-6}" fill="#fbbf24" font-size="10" font-weight="700">${p.d.unit}架</text>`;
+  });
+  s.innerHTML=out;
+})();
+</script>
+</body>
+</html>
